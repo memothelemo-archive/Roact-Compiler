@@ -136,7 +136,11 @@ do
 	end
 	function App:updateTree()
 		if self.tree then
-			return TS.Promise.new(function(resolve)
+			return TS.Promise.new(function(resolve, reject)
+				if self.moduleSource == nil then
+					self:cancelOperation()
+					return reject("Failed to load the active ModuleScript, maybe you deleted it?")
+				end
 				local updatedModule = require(self.moduleSource:Clone())(Roact)
 				local newInterface = Roact.createElement("ScreenGui", {}, {
 					updatedModule,
@@ -354,6 +358,9 @@ do
 		self.realButtonRef = Roact.createRef()
 		self.motor = Flipper.SingleMotor.new(0)
 		self.motor:onStep(self.updateAlpha)
+	end
+	function Button:willUnmount()
+		self.motor:destroy()
 	end
 	function Button:render()
 		local pushedAlpha = (self.state.isHighlighted and 1) or 0
@@ -1088,7 +1095,7 @@ do
 			}, {
 				Roact.createElement(Button, {
 					Active = true,
-					Text = "Update",
+					Text = "Update Interface",
 					Position = UDim2.fromScale(0.5, 0.5),
 					Size = UDim2.fromOffset(200, UIConfig.ButtonHeight),
 					OnClick = function()
@@ -1145,6 +1152,7 @@ do
 	end
 	function ErrorPage:render()
 		-- Getting the scrolling frame's size by its output traceback
+		local finalTraceback = "Please check the output window for more information, because sometimes it is not detailed to find errors there probably.\n\n" .. self.props.traceback
 		return Roact.createElement(Page, {
 			active = self.props.status == "Error",
 		}, {
@@ -1169,7 +1177,7 @@ do
 							if container == nil then
 								return UDim2.fromScale(1, 0)
 							end
-							local frameSize = TextService:GetTextSize(self.props.traceback, self.configuration.fontSize, self.configuration.font, Vector2.new(container.AbsoluteSize.X, math.huge))
+							local frameSize = TextService:GetTextSize(finalTraceback, self.configuration.fontSize, self.configuration.font, Vector2.new(container.AbsoluteSize.X, math.huge))
 							local _0 = UDim2.fromOffset(0, frameSize.Y)
 							local _1 = UDim2.fromScale(1, 0)
 							return _0 + _1
@@ -1178,7 +1186,7 @@ do
 						Size = UDim2.fromScale(1, 1),
 					}, {
 						Roact.createElement(Paragraph, {
-							Text = self.props.traceback,
+							Text = finalTraceback,
 							Font = Enum.Font.Code,
 							FontSize = 16,
 							Size = UDim2.fromScale(1, 1),
@@ -1243,7 +1251,7 @@ do
 				SizeY = UDim.new(0, 80),
 			}, {
 				Roact.createElement("ImageLabel", {
-					Image = "rbxassetid:/" .. Config.IconId,
+					Image = "rbxassetid://" .. Config.IconId,
 					AnchorPoint = Vector2.new(0.5, 0.5),
 					Position = UDim2.fromScale(0.5, 0.5),
 					BackgroundTransparency = 1,
@@ -1316,6 +1324,7 @@ local Button = TS.import(script, script.Parent.Parent, "Components", "Button").B
 local Centered = TS.import(script, script.Parent.Parent, "Components", "Centered").default
 local Header = TS.import(script, script.Parent.Parent, "Components", "Header").default
 local Page = TS.import(script, script.Parent.Parent, "Components", "Page").Page
+local Paragraph = TS.import(script, script.Parent.Parent, "Components", "Paragraph").default
 local promptTexts = {
 	noModule = "Please select a Roact component to compile",
 }
@@ -1408,7 +1417,7 @@ do
 			Text = self.state.prompt,
 		}
 		local _4 = UDim2.fromScale(1, 0)
-		local _5 = UDim2.fromOffset(0, 220)
+		local _5 = UDim2.fromOffset(0, 150)
 		_3.Size = _4 + _5
 		_1[_2 + 1] = Roact.createElement(Header, _3)
 		_1[_2 + 2] = Roact.createElement(Centered, {
@@ -1425,6 +1434,14 @@ do
 				end,
 			}),
 		})
+		local _6 = {
+			Font = UIConfig.ParagraphFonts.Normal,
+		}
+		local _7 = UDim2.fromScale(1, 0)
+		local _8 = UDim2.fromOffset(0, 100)
+		_6.Size = _7 + _8
+		_6.Text = "Note: If you selected a ModuleScript and then it doesn't automatically load, please reload your place and try again. It does that for some reason."
+		_1[_2 + 3] = Roact.createElement(Paragraph, _6)
 		return Roact.createElement(Page, _0, _1)
 	end
 	function SelectModule:willUnmount()
@@ -1551,9 +1568,9 @@ return {
 return {
 	PluginName = "Roact Compiler",
 	PluginId = "memothelemo-rc",
-	IconId = "6752715878",
-	Version = "v0.1a",
-	DEBUG_MODE = false,
+	IconId = "6752715859",
+	Version = "v0.2a",
+	DEBUG_MODE = true,
 }
 ]]></string>
           </Properties>
