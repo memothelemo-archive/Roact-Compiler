@@ -10,7 +10,7 @@ A plugin that tries to solve the problem of using Roact module
 
 Method #1: From ROBLOX:
 
-- Click this provided link and click "Install" button.
+- Click this provided [link](https://www.roblox.com/library/6752892292/Roact-Compiler) and click "Install" button.
 
 Method #2: From .rbxmx file:
 
