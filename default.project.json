@@ -1,0 +1,16 @@
+{
+	"name": "Roact Compiler",
+	"globIgnorePaths": [
+		"**/package.json",
+		"**/tsconfig.json"
+	],
+	"tree": {
+		"$path": "out",
+		"rbxts": {
+			"$path": "include",
+			"node_modules": {
+				"$path": "node_modules/@rbxts"
+			}
+		}
+	}
+}
