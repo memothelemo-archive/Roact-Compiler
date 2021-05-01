@@ -22,7 +22,7 @@ export class ActivePage extends Roact.Component<Props, States> {
 				<Centered SizeY={new UDim(0, 50)}>
 					<Button
 						Active={true}
-						Text="Update"
+						Text="Update Interface"
 						Position={UDim2.fromScale(0.5, 0.5)}
 						Size={UDim2.fromOffset(200, UIConfig.ButtonHeight)}
 						OnClick={() => this.props.requestRerender()}

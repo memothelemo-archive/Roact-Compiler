@@ -31,6 +31,9 @@ export class ErrorPage extends Roact.Component<Props, States> {
 	}
 	render() {
 		// Getting the scrolling frame's size by its output traceback
+		const finalTraceback =
+			"Please check the output window for more information, because sometimes it is not detailed to find errors there probably.\n\n" +
+			this.props.traceback;
 		return (
 			<Page active={this.props.status === "Error"}>
 				<Paragraph
@@ -50,7 +53,7 @@ export class ErrorPage extends Roact.Component<Props, States> {
 									return UDim2.fromScale(1, 0);
 								}
 								const frameSize = TextService.GetTextSize(
-									this.props.traceback,
+									finalTraceback,
 									this.configuration.fontSize,
 									this.configuration.font,
 									new Vector2(container.AbsoluteSize.X, math.huge),
@@ -61,7 +64,7 @@ export class ErrorPage extends Roact.Component<Props, States> {
 							Size={UDim2.fromScale(1, 1)}
 						>
 							<Paragraph
-								Text={this.props.traceback}
+								Text={finalTraceback}
 								Font={Enum.Font.Code}
 								FontSize={16}
 								Size={UDim2.fromScale(1, 1)}

@@ -7,6 +7,7 @@ import Centered from "../Components/Centered";
 import Header from "../Components/Header";
 import Layout from "../Components/Layout";
 import { Page } from "../Components/Page";
+import Paragraph from "../Components/Paragraph";
 
 interface States {
 	prompt: string;
@@ -120,7 +121,7 @@ export class SelectModule extends Roact.Component<Props, States> {
 				<Header
 					Font={Enum.Font.SourceSansBold}
 					Text={this.state.prompt}
-					Size={UDim2.fromScale(1, 0).add(UDim2.fromOffset(0, 220))}
+					Size={UDim2.fromScale(1, 0).add(UDim2.fromOffset(0, 150))}
 				/>
 				<Centered SizeY={new UDim(0, 50)}>
 					<Button
@@ -134,6 +135,11 @@ export class SelectModule extends Roact.Component<Props, States> {
 						}}
 					/>
 				</Centered>
+				<Paragraph
+					Font={UIConfig.ParagraphFonts.Normal}
+					Size={UDim2.fromScale(1, 0).add(UDim2.fromOffset(0, 100))}
+					Text="Note: If you selected a ModuleScript and then it doesn't automatically load, please reload your place and try again. It does that for some reason."
+				/>
 			</Page>
 		);
 	}

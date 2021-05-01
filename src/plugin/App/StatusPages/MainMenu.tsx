@@ -24,7 +24,7 @@ export class MainMenu extends Roact.Component<Props, States> {
 			<Page active={this.props.status === "MainMenu"}>
 				<Centered SizeY={new UDim(0, 80)}>
 					<imagelabel
-						Image={"rbxassetid:/" + Config.IconId}
+						Image={"rbxassetid://" + Config.IconId}
 						AnchorPoint={new Vector2(0.5, 0.5)}
 						Position={UDim2.fromScale(0.5, 0.5)}
 						BackgroundTransparency={1}

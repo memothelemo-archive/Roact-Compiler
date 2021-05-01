@@ -49,7 +49,12 @@ export class App extends Roact.Component<Props, States> {
 
 	updateTree() {
 		if (this.tree) {
-			return new Promise<void>((resolve) => {
+			return new Promise<void>((resolve, reject) => {
+				if (this.moduleSource === undefined) {
+					this.cancelOperation();
+					return reject("Failed to load the active ModuleScript, maybe you deleted it?");
+				}
+
 				const updatedModule = (require(this.moduleSource.Clone()) as (roact: unknown) => Roact.Element)(Roact);
 				const newInterface = <screengui>{updatedModule}</screengui>;
 				Roact.update(this.tree, newInterface);

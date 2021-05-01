@@ -26,7 +26,6 @@ export class Button extends Roact.Component<Props, States> {
 	private motor: Flipper.SingleMotor;
 	private clickedBinding: Roact.Binding<number>;
 	private updateAlpha: Roact.BindingFunction<number>;
-	private snackbarCircle!: Roact.Element;
 	private realButtonRef: Roact.Ref<TextButton>;
 
 	// Static
@@ -41,6 +40,9 @@ export class Button extends Roact.Component<Props, States> {
 		this.realButtonRef = Roact.createRef();
 		this.motor = new Flipper.SingleMotor(0);
 		this.motor.onStep(this.updateAlpha);
+	}
+	willUnmount() {
+		this.motor.destroy();
 	}
 	render() {
 		const pushedAlpha = (this.state.isHighlighted && 1) || 0;
