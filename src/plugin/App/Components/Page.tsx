@@ -1,11 +1,12 @@
 import Roact from "@rbxts/roact";
 import UIConfig from "plugin/Data/UIConfig";
+import StateContext from "../Contexts/StateContext";
 import Layout from "./Layout";
 
 interface States {}
 
 interface Props {
-	active: boolean;
+	name: string;
 }
 
 export class Page extends Roact.Component<Props, States> {
@@ -14,10 +15,20 @@ export class Page extends Roact.Component<Props, States> {
 	}
 	render() {
 		return (
-			<frame BackgroundTransparency={1} Size={UDim2.fromScale(1, 1)} Visible={this.props.active}>
-				<Layout Padding={UIConfig.DefaultPadding} />
-				{this.props[Roact.Children]}
-			</frame>
+			<StateContext.Consumer
+				render={(status) => {
+					return (
+						<frame
+							BackgroundTransparency={1}
+							Size={UDim2.fromScale(1, 1)}
+							Visible={status === this.props.name}
+						>
+							<Layout Padding={UIConfig.DefaultPadding} />
+							{this.props[Roact.Children]}
+						</frame>
+					);
+				}}
+			/>
 		);
 	}
 }

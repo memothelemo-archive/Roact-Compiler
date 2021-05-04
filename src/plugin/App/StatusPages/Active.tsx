@@ -9,7 +9,7 @@ interface States {}
 interface Props {
 	requestRerender: () => void;
 	cancelOperation: () => void;
-	status: string;
+	requestClone: () => void;
 }
 
 export class ActivePage extends Roact.Component<Props, States> {
@@ -18,7 +18,7 @@ export class ActivePage extends Roact.Component<Props, States> {
 	}
 	render() {
 		return (
-			<Page active={this.props.status === "Active"}>
+			<Page name={"Active"}>
 				<Centered SizeY={new UDim(0, 50)}>
 					<Button
 						Active={true}
@@ -26,6 +26,15 @@ export class ActivePage extends Roact.Component<Props, States> {
 						Position={UDim2.fromScale(0.5, 0.5)}
 						Size={UDim2.fromOffset(200, UIConfig.ButtonHeight)}
 						OnClick={() => this.props.requestRerender()}
+					/>
+				</Centered>
+				<Centered SizeY={new UDim(0, 50)}>
+					<Button
+						Active={true}
+						Text="Clone to PlayerGui"
+						Position={UDim2.fromScale(0.5, 0.5)}
+						Size={UDim2.fromOffset(200, UIConfig.ButtonHeight)}
+						OnClick={() => this.props.requestClone()}
 					/>
 				</Centered>
 				<Centered SizeY={new UDim(0, 50)}>

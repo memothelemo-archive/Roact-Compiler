@@ -13,29 +13,27 @@ interface States {}
 
 interface Props {
 	traceback: string;
-	status: string;
 	requestExit: () => void;
 }
 
 export class ErrorPage extends Roact.Component<Props, States> {
 	public container: Roact.Binding<TextLabel>;
 	public updateContainer: Roact.BindingFunction<TextLabel>;
-	private configuration = {
-		font: Enum.Font.Code,
-		fontSize: 16,
-	};
 
 	constructor(props: Props) {
 		super(props);
 		[this.container, this.updateContainer] = Roact.createBinding((undefined as unknown) as TextLabel);
 	}
+
 	render() {
 		// Getting the scrolling frame's size by its output traceback
 		const finalTraceback =
-			"Please check the output window for more information, because sometimes it is not detailed to find errors there probably.\n\n" +
+			"Please check the output window for more information," +
+			" because sometimes it is not detailed to find errors there probably." +
+			"\n\n" +
 			this.props.traceback;
 		return (
-			<Page active={this.props.status === "Error"}>
+			<Page name={"Error"}>
 				<Paragraph
 					Font={UIConfig.ParagraphFonts.Bold}
 					Size={UDim2.fromOffset(200, 30)}
@@ -54,8 +52,8 @@ export class ErrorPage extends Roact.Component<Props, States> {
 								}
 								const frameSize = TextService.GetTextSize(
 									finalTraceback,
-									this.configuration.fontSize,
-									this.configuration.font,
+									UIConfig.ErrorTracebackFontSize,
+									UIConfig.ErrorTracebackFont,
 									new Vector2(container.AbsoluteSize.X, math.huge),
 								);
 								return UDim2.fromOffset(0, frameSize.Y).add(UDim2.fromScale(1, 0));

@@ -2,6 +2,9 @@ export = {
 	DefaultPadding: 20,
 	CalloutPadding: 10,
 
+	ErrorTracebackFont: Enum.Font.Code,
+	ErrorTracebackFontSize: 16,
+
 	HeaderFont: Enum.Font.GothamBold,
 	ButtonFont: Enum.Font.SourceSans,
 	ButtonHeight: 50,

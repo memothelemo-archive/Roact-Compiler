@@ -10,7 +10,6 @@ import Paragraph from "../Components/Paragraph";
 interface States {}
 
 interface Props {
-	status: string;
 	onExitClick: () => void;
 	onStartClick: () => void;
 }
@@ -21,7 +20,7 @@ export class MainMenu extends Roact.Component<Props, States> {
 	}
 	render() {
 		return (
-			<Page active={this.props.status === "MainMenu"}>
+			<Page name={"MainMenu"}>
 				<Centered SizeY={new UDim(0, 80)}>
 					<imagelabel
 						Image={"rbxassetid://" + Config.IconId}

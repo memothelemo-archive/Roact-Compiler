@@ -1,11 +1,10 @@
 import Roact from "@rbxts/roact";
-import { Selection } from "@rbxts/services";
 import AttemptLoadModule from "libraries/AttemptLoadModule";
 import UIConfig from "plugin/Data/UIConfig";
+import { LoadedRoactModule } from "plugin/Types/Main";
 import { Button } from "../Components/Button";
 import Centered from "../Components/Centered";
 import Header from "../Components/Header";
-import Layout from "../Components/Layout";
 import { Page } from "../Components/Page";
 import Paragraph from "../Components/Paragraph";
 
@@ -17,17 +16,19 @@ interface Props {
 	status: string;
 	onError: (traceback: string) => void;
 	onCancel: () => void;
-	onModuleFound: (passedModule: (roact: unknown) => Roact.Element, moduleScript: ModuleScript) => void;
+	onModuleFound: (passedModule: LoadedRoactModule, moduleScript: ModuleScript) => void;
 }
 
 const promptTexts = {
 	noModule: "Please select a Roact component to compile",
+	noObject: "Please select an object.",
+	notModuleScript: "The following selected object is not a ModuleScript",
+	multipleObjects: "Please select only one object",
 };
 
 export class SelectModule extends Roact.Component<Props, States> {
 	private selectionConnection!: RBXScriptConnection;
 	private thatModule!: ModuleScript;
-	private isActive!: boolean;
 
 	constructor(props: Props) {
 		super(props);
@@ -43,6 +44,20 @@ export class SelectModule extends Roact.Component<Props, States> {
 				Selection.Set([]);
 			}
 		}
+	}
+
+	isSelectedObjectsVaild(objects: Instance[]) {
+		// Making sure if it is not more than 1 objects
+		if (objects.size() !== 1) {
+			return ([false, promptTexts.multipleObjects] as unknown) as LuaTuple<[boolean, string]>;
+		}
+
+		// Making sure if it is a ModuleScript class
+		if (!objects[0].IsA("ModuleScript")) {
+			return ([false, promptTexts.notModuleScript] as unknown) as LuaTuple<[boolean, string]>;
+		}
+
+		return ([true, "Success"] as unknown) as LuaTuple<[boolean, string]>;
 	}
 
 	evaluateSelection() {
@@ -63,31 +78,17 @@ export class SelectModule extends Roact.Component<Props, States> {
 		const Selection = game.GetService("Selection");
 		const selectedObjects = Selection.Get();
 
-		if (selectedObjects.size() === 0) {
+		const [isVaild, promptError] = this.isSelectedObjectsVaild(selectedObjects);
+		if (!isVaild) {
 			return this.setState({
-				prompt: "Please select an object",
+				prompt: promptError,
 			});
 		}
-
-		if (selectedObjects.size() > 1) {
-			return this.setState({
-				prompt: "Please select only one object!",
-			});
-		}
-
-		// Checking if it is a module script
 		const object = selectedObjects[0];
-		if (!object.IsA("ModuleScript")) {
-			return this.setState({
-				prompt: "This selected object is not a ModuleScript",
-			});
-		}
 
 		// Making sure if there's no script conflicts
 		AttemptLoadModule(object as ModuleScript)
 			.then((module) => {
-				type thatLoadedModule = (roact: unknown) => Roact.Element;
-
 				// Making sure if it is a function!
 				if (!typeIs(module, "function")) {
 					return this.setState({
@@ -95,14 +96,14 @@ export class SelectModule extends Roact.Component<Props, States> {
 					});
 				}
 				this.thatModule = object as ModuleScript;
-				this.props.onModuleFound(module as thatLoadedModule, this.thatModule);
+				this.props.onModuleFound(module as LoadedRoactModule, this.thatModule);
 			})
 			.catch((traceback) => {
 				this.props.onError(traceback);
 			});
 	}
 
-	stop() {
+	stopSession() {
 		this.thatModule = (undefined as unknown) as ModuleScript;
 		if (this.selectionConnection !== undefined) {
 			this.selectionConnection.Disconnect();
@@ -110,14 +111,21 @@ export class SelectModule extends Roact.Component<Props, States> {
 	}
 
 	didMount() {
-		this.selectionConnection = game
-			.GetService("Selection")
-			.SelectionChanged.Connect(() => this.evaluateSelection());
+		this.selectionConnection = game.GetService("Selection").SelectionChanged.Connect(() => {
+			const selectedObjects = game.GetService("Selection").Get();
+			if (selectedObjects.size() !== 0) {
+				this.evaluateSelection();
+			} else {
+				this.setState({
+					prompt: promptTexts.noModule,
+				});
+			}
+		});
 	}
 
 	render() {
 		return (
-			<Page active={this.props.status === "SelectModule"}>
+			<Page name={"SelectModule"}>
 				<Header
 					Font={Enum.Font.SourceSansBold}
 					Text={this.state.prompt}
@@ -130,7 +138,7 @@ export class SelectModule extends Roact.Component<Props, States> {
 						Position={UDim2.fromScale(0.5, 0.5)}
 						Size={UDim2.fromOffset(200, UIConfig.ButtonHeight)}
 						OnClick={() => {
-							this.stop();
+							this.stopSession();
 							this.props.onCancel();
 						}}
 					/>
