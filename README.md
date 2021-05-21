@@ -6,6 +6,8 @@ A plugin that tries to solve the problem of using Roact module
 
 <br>
 
+This project has been discontinued, but you can observe my TS code inside the 'src' folder.
+
 ## Installation
 
 Method #1: From ROBLOX:
